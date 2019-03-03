@@ -55,3 +55,13 @@ app.put("/quotes", (req, res) => {
     }
   );
 });
+
+app.delete("/quotes", (req, res) => {
+  db.collection("quotes").findOneAndDelete(
+    { name: req.body.name },
+    (err, result) => {
+      if (err) return res.send(500, err);
+      res.send({ message: "A darth vadar quote got deleted" });
+    }
+  );
+});
