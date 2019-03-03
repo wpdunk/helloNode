@@ -11,13 +11,16 @@
       <input type="text" placeholder="quote" name="quote" />
       <button type="submit">Submit</button>
     </form>
+    <button id="cipofy"> Cipofy </button>
+    <p>Replaces all quotes by Lance with Mario's famous quote.</p>
     <ul class="quotes">
       <% for(var i=0; i<quotes.length; i++) {%>
-        <li class="quote">
-          <h2><%= quotes[i].name %></h3>
+        <li class="quote" id="<%= quotes[i]._id %>">
+          <h2><%= quotes[i].name %></h2>
           <h3><%= quotes[i].quote %></h3>
         </li>
       <% } %>
     </ul>
+    <script src="main.js"></script>
   </body>
 </html>

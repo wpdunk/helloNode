@@ -1,25 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+
+app.use(express.static("public"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 const MongoClient = require("mongodb").MongoClient;
-
-// all CRUD handlers are below
-
-// app.listen(3000, function() {
-//   console.log("listening on 3000");
-// });
-
-// mongoDB connection
 var db;
-// var dbURL =
-//   "mongodb://bikeFAN:<duraACE>@hello-node-shard-00-00-mdbhs.mongodb.net:27017,hello-node-shard-00-01-mdbhs.mongodb.net:27017,hello-node-shard-00-02-mdbhs.mongodb.net:27017/test?ssl=true&replicaSet=hello-node-shard-0&authSource=admin&retryWrites=true";
+var dbURL = process.env.DB_URL;
 
 MongoClient.connect(
-  "mongodb://bikeFAN:duraACE@hello-node-shard-00-00-mdbhs.mongodb.net:27017,hello-node-shard-00-01-mdbhs.mongodb.net:27017,hello-node-shard-00-02-mdbhs.mongodb.net:27017/test?ssl=true&replicaSet=hello-node-shard-0&authSource=admin&retryWrites=true",
+  dbURL,
   (err, client) => {
     if (err) return console.log(err);
     db = client.db("cycling-quotes-db");
@@ -29,9 +23,6 @@ MongoClient.connect(
   }
 );
 
-// app.get("/", function(req, res) {
-//   res.send("Hello World");
-// });
 app.get("/", (req, res) => {
   db.collection("quotes")
     .find()
@@ -42,23 +33,25 @@ app.get("/", (req, res) => {
 });
 
 app.post("/quotes", (req, res) => {
-  console.log(req.body);
-
   db.collection("quotes").save(req.body, (err, result) => {
     if (err) return console.log(err);
-
-    console.log("saved to database");
     res.redirect("/");
   });
 });
 
-////
-
-// app.post('/quotes', (req, res) => {
-//   db.collection('quotes').save(req.body, (err, result) => {
-//     if (err) return console.log(err)
-//
-//     console.log('saved to database')
-//     res.redirect('/')
-//   })
-// })
+app.use(bodyParser.json());
+app.put("/quotes", (req, res) => {
+  db.collection("quotes").findOneAndUpdate(
+    { name: "Lance" },
+    {
+      $set: {
+        name: req.body.name,
+        quote: req.body.quote
+      }
+    },
+    (err, result) => {
+      if (err) return res.send(err);
+      res.send(result);
+    }
+  );
+});
